@@ -94,12 +94,12 @@ public class MainActivity extends AppCompatActivity {
       //      img.setImageBitmap(barcodes);
       //      img.invalidate();
         }
-        /*
+
         public Bitmap createBarcode(String code){
             Bitmap bitmap = null;
             MultiFormatWriter gen = new MultiFormatWriter();
             com.google.zxing.
         }
-        */
+
     }
 }
