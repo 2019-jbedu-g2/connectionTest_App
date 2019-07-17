@@ -52,56 +52,59 @@ public class RequestHttpURLConnection {
         }
         //HttpURLConnection을 통해 web의 데이터를 가져온다.
 
-         try{
-                URL url = new URL(_url);
-                // url에 대한 연결클래스인  urlconnection을 획득. getinputstream을 사용하여 서버로 부터 데이터를 읽어 올수 있게됨
-                urlConn = (HttpURLConnection) url.openConnection();
+        try{
+            StringBuffer adress = new StringBuffer();
+            adress.append(_url);
+            adress.append(sbParams.toString());
+            URL url = new URL(adress.toString());
+            // url에 대한 연결클래스인  urlconnection을 획득. getinputstream을 사용하여 서버로 부터 데이터를 읽어 올수 있게됨
+            urlConn = (HttpURLConnection) url.openConnection();
 
-                //urlconn 설정
-                urlConn.setReadTimeout(1000);   // 읽어 들일 시 연결 시간. 서버를 보호하기위한 설정 1000 = 1초
-                urlConn.setConnectTimeout(1000);  // 서버 접속시 연결 시간. 위의 1000과 합하여 2초내에 연결 되지않으면 서버와의 연결을 포기.
-                urlConn.setRequestMethod("GET"); // URL요청에 대한 메소드 설정 : GET(리소스 취득)/POST(리소스 생성/데이터추가)/PUT(리소스 변경)/DELETE(리소스 삭제)로 설정
-               // urlConn.setDoOutput(true);   //쓰는 기능 on. default값 false. (주석을 해제 하면 강제로 요청 메소드 방식이 POST로 변경)
-                urlConn.setDoInput(true);   // 읽어들임 기능 on
-             // Accept-Charset - 클라이언트가 이해 할수 있는 캐릭터셋이 무엇인지 알려줌.
-                urlConn.setRequestProperty("Accept", "application/json");  // 서버의 Response 데이터를 json 형식으로 요청.
-             // 리소스의 MEDIA TYPE을 나타냄 (MIME-TYPE의 하나)
-                urlConn.setRequestProperty("Context_Type", "application/json"); // 타입설정(text/html)형식으로 전송(json으로 전달)
-                //urlConn.setRequestProperty("Accept-Charset", "UTF-8"); // Accept-Charset - 클라이언트가 이해 할수 있는 캐릭터셋이 무엇인지 알려줌.
-             //   urlConn.setRequestProperty("Context_Type", "application/x-www-form-urlencoded;cahrset=UTF-8""); // 리소스의 MEDIA TYPE을 나타냄 (MIME-TYPE의 하나)
+            //urlconn 설정
+            urlConn.setReadTimeout(1000);   // 읽어 들일 시 연결 시간. 서버를 보호하기위한 설정 1000 = 1초
+            urlConn.setConnectTimeout(1000);  // 서버 접속시 연결 시간. 위의 1000과 합하여 2초내에 연결 되지않으면 서버와의 연결을 포기.
+            urlConn.setRequestMethod("GET"); // URL요청에 대한 메소드 설정 : GET(리소스 취득)/POST(리소스 생성/데이터추가)/PUT(리소스 변경)/DELETE(리소스 삭제)로 설정
+            // urlConn.setDoOutput(true);   //쓰는 기능 on. default값 false. (주석을 해제 하면 강제로 요청 메소드 방식이 POST로 변경)
+            urlConn.setDoInput(true);   // 읽어들임 기능 on
+            // Accept-Charset - 클라이언트가 이해 할수 있는 캐릭터셋이 무엇인지 알려줌.
+            urlConn.setRequestProperty("Accept", "application/json");  // 서버의 Response 데이터를 json 형식으로 요청.
+            // 리소스의 MEDIA TYPE을 나타냄 (MIME-TYPE의 하나)
+            urlConn.setRequestProperty("Context_Type", "application/json"); // 타입설정(text/html)형식으로 전송(json으로 전달)
+            //urlConn.setRequestProperty("Accept-Charset", "UTF-8"); // Accept-Charset - 클라이언트가 이해 할수 있는 캐릭터셋이 무엇인지 알려줌.
+            //   urlConn.setRequestProperty("Context_Type", "application/x-www-form-urlencoded;cahrset=UTF-8""); // 리소스의 MEDIA TYPE을 나타냄 (MIME-TYPE의 하나)
 
-                //파라미터 전달 및 데이터 읽어오기 (주석을 해제 하면 강제로 요청 메소드 방식이 POST로 변경)
+            //파라미터 전달 및 데이터 읽어오기 (주석을 해제 하면 강제로 요청 메소드 방식이 POST로 변경)
 //                PrintWriter pw = new PrintWriter(new OutputStreamWriter(urlConn.getOutputStream()));
 //                pw.write(sbParams.toString()); // 출력 스트림에 출력
 //                pw.flush(); // 출력스트림을 비우고 버퍼링된 모든 출력 바이트를 강제 실행.
 //                pw.close(); // 출력스트림을 닫고 모든 시스템 자원을 해제
 
-                //연결 요청 확인
-                // 실패 시 null을 리턴하고 종료
-                if (urlConn.getResponseCode() != HttpURLConnection.HTTP_OK) return null;        // ResponseCode가 200이 아니면 연결 실패로 리턴
+            //연결 요청 확인
+            // 실패 시 null을 리턴하고 종료
+            if (urlConn.getResponseCode() != HttpURLConnection.HTTP_OK) return null;        // ResponseCode가 200이 아니면 연결 실패로 리턴
 
-                //읽어온 결과물 리턴
-                // 요청한 url의 출력물을 버퍼리더로 받음.
-                BufferedReader reader = new BufferedReader(new InputStreamReader(urlConn.getInputStream(), "UTF-8"));
-                //출력물의 라인과 그 합에 대한 변수
-                String line;
-                String page = "";
+            //읽어온 결과물 리턴
+            // 요청한 url의 출력물을 버퍼리더로 받음.
+            BufferedReader reader = new BufferedReader(new InputStreamReader(urlConn.getInputStream(), "UTF-8"));
+            //출력물의 라인과 그 합에 대한 변수
+            String line;
+            String page = "";
 
-                while (((line = reader.readLine()) != null)) {              // 버퍼 리더내의 글들을 스트링으로 붙임.
-                    page += line;
-                }
-                return page;
-            } catch(
-            MalformedURLException e){ // for URL
-                e.printStackTrace();
-            }catch(IOException e){  // for openConnection()
-                e.printStackTrace();
-            }finally{
-                if (urlConn != null) urlConn.disconnect();                  // 완료 후 연결 끊음.
+            while (((line = reader.readLine()) != null)) {              // 버퍼 리더내의 글들을 스트링으로 붙임.
+                page += line;
             }
-    return null;
-
+            return page;
+        } catch(
+                MalformedURLException e){ // for URL
+            e.printStackTrace();
+        }catch(IOException e){  // for openConnection()
+            e.printStackTrace();
+        }finally{
+            if (urlConn != null) urlConn.disconnect();                  // 완료 후 연결 끊음.
         }
+        return null;
 
     }
+
+}
 

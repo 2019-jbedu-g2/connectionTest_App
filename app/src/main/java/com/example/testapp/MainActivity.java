@@ -1,6 +1,7 @@
 package com.example.testapp;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 
 import android.content.ContentValues;
@@ -15,15 +16,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 
 public class MainActivity extends AppCompatActivity {
 
     Button Send_button;
-    TextView tv;
+    TextView tv, barcodetv;
     EditText requestUrlEditor = null;
     String url = "";
     String barcode = "";
     ImageView img;
+    //ContentValues request  = new ContentValues();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,13 +42,13 @@ public class MainActivity extends AppCompatActivity {
                 //URL설정.
                 url = requestUrlEditor.getText().toString();
                 if(!TextUtils.isEmpty(url)){
-                 //   if(URLUtil.isHttpsUrl(url) || URLUtil.isHttpsUrl(url)){
+                    //   if(URLUtil.isHttpsUrl(url) || URLUtil.isHttpsUrl(url)){
                     // url과 파라메터값을 전달(현재는 파라미터 값을 null로 처리하고 url에 직접 입력하게 해둠. 입력값들을 받아 차례로 넣어 RequestHttpURLConnection에서 자동으로 조립할 수 있도록 가능.
-                        NetworkTask networkTask = new NetworkTask(url,null);
-                        networkTask.execute();  // 비동기 task 작동.
-                  //  }else{
-                  //      Toast.makeText(getApplicationContext(),"유효한 주소값이 아닙니다.",Toast.LENGTH_SHORT).show();
-                 //   }
+                    com.example.testapp.MainActivity.NetworkTask networkTask = new com.example.testapp.MainActivity.NetworkTask(url,null);
+                    networkTask.execute();  // 비동기 task 작동.
+                    //  }else{
+                    //      Toast.makeText(getApplicationContext(),"유효한 주소값이 아닙니다.",Toast.LENGTH_SHORT).show();
+                    //   }
                 }else{
                     Toast.makeText(getApplicationContext(),"URL창이 비어있습니다.",Toast.LENGTH_SHORT).show();
                 }
@@ -57,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
         }
         if(tv == null){
             tv = (TextView) findViewById(R.id.tv);
+        }
+        if(barcodetv == null){
+            barcodetv = (TextView) findViewById(R.id.barcodetv);
         }
         if(Send_button == null){
             Send_button = (Button)  findViewById(R.id.Send_button);
@@ -89,16 +98,30 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(s);
             //doInBackground 로 부터 리턴된 값이 매개변수로 넘어오므로 s를 추력.
             tv.setText(s);
+            barcodetv.setText(s);
             barcode = s;
-         //   Bitmap barcodes = createBarcode(barcode);
-      //      img.setImageBitmap(barcodes);
-      //      img.invalidate();
+            Bitmap barcodes = createBarcode(barcode);
+            img.setImageBitmap(barcodes);
+            img.invalidate();
         }
 
         public Bitmap createBarcode(String code){
             Bitmap bitmap = null;
             MultiFormatWriter gen = new MultiFormatWriter();
-            com.google.zxing.
+            try{
+                final int WIDTH = 840;
+                final int HEIGHT = 320;
+                BitMatrix bytemap = gen.encode(code, BarcodeFormat.CODE_128, WIDTH,HEIGHT);
+                bitmap = Bitmap.createBitmap(WIDTH,HEIGHT,Bitmap.Config.ARGB_8888);
+                for(int i = 0 ; i < WIDTH ; ++i){
+                    for(int j = 0 ; j < HEIGHT ; ++j){
+                        bitmap.setPixel(i,j,bytemap.get(i,j)? Color.BLACK : Color.WHITE);
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return bitmap;
         }
 
     }
