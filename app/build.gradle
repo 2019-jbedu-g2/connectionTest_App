@@ -17,7 +17,7 @@ android {
         }
     }
 }
-repositories{
+repositories {
     jcenter()
 }
 
@@ -30,7 +30,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    //zxing 라이브러리
     implementation 'com.journeyapps:zxing-android-embedded:3.6.0'
-    //implementation project(path: ':core-3.3.3')
-
+    // 웹 소켓 통신을 위한 필요 코드
+    implementation 'com.github.nkzawa:socket.io-client:0.6.0'
+    //
 }
