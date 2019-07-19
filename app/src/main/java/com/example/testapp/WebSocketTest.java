@@ -35,17 +35,21 @@ public class WebSocketTest extends AppCompatActivity {
             public void onClick(View v) {
                 url = socket_url_editor.getText().toString();
                 if(!TextUtils.isEmpty(url)){
-
-                    try {
-                        mSocket = IO.socket(url);    //소켓 연결한 주소
-                        mSocket.connect();              // 소켓 연결 시도.
-                        mSocket.on(Socket.EVENT_CONNECT,onConnect);         // 서버로 부터 받은 연락 체크 . 연결이 되었을때 , onConnect 함수 호출
-                        mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);  // 연결이 끊겼을때
-                        mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError); // 커넥트 에러일때
-                        mSocket.on(Socket.EVENT_CONNECT_TIMEOUT,onConnectError); //연결 시간초과일때
-                    }catch (URISyntaxException e){
-                        e.printStackTrace();
-                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                mSocket = IO.socket(url);    //소켓 연결한 주소
+                                mSocket.on(Socket.EVENT_CONNECT,onConnect);         // 서버로 부터 받은 연락 체크 . 연결이 되었을때 , onConnect 함수 호출
+                                mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);  // 연결이 끊겼을때
+                                mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError); // 커넥트 에러일때
+                                mSocket.on(Socket.EVENT_CONNECT_TIMEOUT,onConnectError); //연결 시간초과일때
+                                mSocket.connect();              // 소켓 연결 시도.
+                            }catch (URISyntaxException e){
+                                e.printStackTrace();
+                            }
+                        }
+                    });
                 }else{
                     Toast.makeText(getApplicationContext(),"URL창이 비어있습니다.",Toast.LENGTH_SHORT).show();
                 }
@@ -54,8 +58,6 @@ public class WebSocketTest extends AppCompatActivity {
         Disconnect_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mSocket.disconnect();
-                Connect_button.setEnabled(true);
-                Disconnect_button.setEnabled(false);
                 mSocket.off(Socket.EVENT_CONNECT,onConnect);
                 mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
                 mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
@@ -74,7 +76,6 @@ public class WebSocketTest extends AppCompatActivity {
         }
         if(Disconnect_button == null){
             Disconnect_button = (Button) findViewById(R.id.Disconnect_button);
-            Disconnect_button.setEnabled(false);
         }
         if(back_button == null){
             back_button = (Button) findViewById(R.id.back_button);
@@ -93,11 +94,14 @@ public class WebSocketTest extends AppCompatActivity {
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            connectStatusTextView.setText("연결 성공");
-            Connect_button.setEnabled(false);
-            Disconnect_button.setEnabled(true);
-            mSocket.emit("clientMessage","hi"); // 소켓에 해당 메시지를 전송.
-            mSocket.on("serverMessage",onMessageReceived);  // 서버로 부터 받은 메시지. onMesssageReceived 호출
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    connectStatusTextView.setText("연결 성공");
+                    mSocket.emit("clientMessage","hi"); // 소켓에 해당 메시지를 전송.
+                    mSocket.on("serverMessage",onMessageReceived);  // 서버로 부터 받은 메시지. onMesssageReceived 호출
+                }
+            });
         }
     };
     // 서버로부터 전달받은 이벤트 처리.
