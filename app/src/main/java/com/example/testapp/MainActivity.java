@@ -168,9 +168,11 @@ public class MainActivity extends AppCompatActivity {
         protected  void onPostExecute(String s){
             super.onPostExecute(s);
             //doInBackground 로 부터 리턴된 값이 매개변수로 넘어오므로 s를 추력.
-            tv.setText(s);
-            barcodetv.setText(s);   // 바코드 하단 번호 출력
-            barcode = s;
+            String T = s.substring(11);
+            tv.setText(T);
+            String bar = s.substring(0,10);
+            barcodetv.setText(bar);   // 바코드 하단 번호 출력
+            barcode = bar;
             Bitmap barcodes = createBarcode(barcode);   // 바코드 생성 함수를 통하여 생성 후 Bitmap 변수에 저장
             img.setImageBitmap(barcodes);               // 이미지 뷰에 Bitmpa을 그림.
             img.invalidate();                       // 이미지뷰를 초기화 시켜 화면을 갱신시킴.
