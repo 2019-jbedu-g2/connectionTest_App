@@ -47,8 +47,13 @@ public class WebSocketTest extends AppCompatActivity {
                             try {
                                 Draft d = new Draft_6455();
                                   wsc = new WebSocketClient( new URI(url), d){
-                                  public void onMessage(String message){
-                                      RTextView.append(message);
+                                  public void onMessage(final String message){
+                                      runOnUiThread(new Runnable() {
+                                          @Override
+                                          public void run() {
+                                              RTextView.append(message);
+                                          }
+                                      });
                                   }
                                   public void onOpen(ServerHandshake handshake){
                                       RTextView.append("연결성공\n");
