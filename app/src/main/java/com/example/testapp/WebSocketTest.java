@@ -18,6 +18,7 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.ResponseCache;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -37,29 +38,34 @@ public class WebSocketTest extends AppCompatActivity {
         Connect_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 url = socket_url_editor.getText().toString();
+                RTextView.setText("");
                 URI uri;
                 if(!TextUtils.isEmpty(url)){
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                  wsc = new WebSocketClient( new URI(url), new Draft(Draft_17())){
+                                Draft d = new Draft_6455();
+                                  wsc = new WebSocketClient( new URI(url), d){
                                   public void onMessage(String message){
+                                      RTextView.append(message);
                                   }
                                   public void onOpen(ServerHandshake handshake){
-
+                                      RTextView.append("연결성공\n");
+                                    //  wsc.send("연결완료");
                                   }
-                                  public void onClose(int intCode, String strReason, boolean boolRemote){
-
+                                  public void onClose(int Code, String Reason, boolean Remote){
+                                      RTextView.append("연결종료 : " + Code + " " + Reason +"\n");
                                   }
                                   public void onError(Exception ex){
-
+                                      RTextView.append("문제발생 : "+ ex + "\n");
                                   }
                                   };
 
                             }catch (URISyntaxException e){
                                 e.printStackTrace();
                             }
+                            wsc.connect();
                         }
                     });
                 }else{
@@ -69,7 +75,7 @@ public class WebSocketTest extends AppCompatActivity {
         });
         Disconnect_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
+                wsc.close();;
             }
         });
         back_button.setOnClickListener(new View.OnClickListener() {
