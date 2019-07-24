@@ -24,8 +24,8 @@ import java.net.URISyntaxException;
 
 public class WebSocketTest extends AppCompatActivity {
     private WebSocketClient wsc;
-    Button Connect_button,Disconnect_button,back_button;
-    EditText socket_url_editor;
+    Button Connect_button,Disconnect_button,back_button, Send_button;
+    EditText socket_url_editor,socket_send_editor;
     TextView connectStatusTextView,RTextView;
     String url = "";
 
@@ -41,38 +41,49 @@ public class WebSocketTest extends AppCompatActivity {
                 RTextView.setText("");
                 URI uri;
                 if(!TextUtils.isEmpty(url)){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+
                             try {
                                 Draft d = new Draft_6455();
-                                  wsc = new WebSocketClient( new URI(url), d){
-                                  public void onMessage(final String message){
-                                      runOnUiThread(new Runnable() {
-                                          @Override
-                                          public void run() {
-                                              RTextView.append(message);
-                                          }
-                                      });
-                                  }
-                                  public void onOpen(ServerHandshake handshake){
-                                      RTextView.append("연결성공\n");
-                                    //  wsc.send("연결완료");
-                                  }
-                                  public void onClose(int Code, String Reason, boolean Remote){
-                                      RTextView.append("연결종료 : " + Code + " " + Reason +"\n");
-                                  }
-                                  public void onError(Exception ex){
-                                      RTextView.append("문제발생 : "+ ex + "\n");
-                                  }
-                                  };
+                                wsc = new WebSocketClient( new URI(url), d){
+                                    public void onMessage(final String message){
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                RTextView.append(message+ "\n");
+                                            }
+                                        });
+                                    }
+                                    public void onOpen(ServerHandshake handshake){
+                                        //    wsc.send("clientMessage");
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                RTextView.append("연결성공\n");
+                                            }
+                                        });
+                                    }
+                                    public void onClose(final int Code, final String Reason, boolean Remote){
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                RTextView.append("연결종료 : " + Code + " " + Reason +"\n");
+                                            }
+                                        });
+                                    }
+                                    public void onError(final Exception ex){
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                RTextView.append("문제발생 : "+ ex + "\n");
+                                            }
+                                        });
+                                    }
+                                };
 
                             }catch (URISyntaxException e){
                                 e.printStackTrace();
                             }
-                            wsc.connect();
-                        }
-                    });
+                    wsc.connect();
                 }else{
                     Toast.makeText(getApplicationContext(),"URL창이 비어있습니다.",Toast.LENGTH_SHORT).show();
                 }
@@ -81,6 +92,11 @@ public class WebSocketTest extends AppCompatActivity {
         Disconnect_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 wsc.close();;
+            }
+        });
+        Send_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                wsc.send(socket_send_editor.getText().toString());
             }
         });
         back_button.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +108,9 @@ public class WebSocketTest extends AppCompatActivity {
     private void initControls(){
         if(Connect_button == null){
             Connect_button = (Button) findViewById(R.id.Connect_button);
+        }
+        if (Send_button == null){
+            Send_button = (Button) findViewById(R.id.Send_button);
         }
         if(Disconnect_button == null){
             Disconnect_button = (Button) findViewById(R.id.Disconnect_button);
@@ -107,6 +126,9 @@ public class WebSocketTest extends AppCompatActivity {
         }
         if(RTextView == null){
             RTextView = (TextView) findViewById(R.id.RTextView);
+        }
+        if(socket_send_editor == null){
+            socket_send_editor = (EditText)findViewById(R.id.socket_send_editor);
         }
     }
 }

@@ -22,7 +22,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="URL입력"
-            android:text="ws://192.168.0.8:8000/" />
+            android:text="ws://192.168.0.8:8000/queue/" />
+        <EditText
+            android:id="@+id/socket_send_editor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="보낼 데이터"
+            android:text="" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,6 +43,13 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="소켓 연결" />
+
+            <Button
+                android:id="@+id/Send_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="테스트 전송" />
 
             <Button
                 android:id="@+id/Disconnect_button"
